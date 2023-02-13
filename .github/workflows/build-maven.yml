@@ -45,6 +45,6 @@ jobs:
           custom_tag: 1.0-beta-${{ steps.mctagcustom.outputs.betaversion }}
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "target/onedayplugin-1.0-SNAPSHOT.jar"
+          artifacts: "target/CityWorld-*.jar"
           tag: 1.0-beta-${{ steps.mctagcustom.outputs.betaversion }}
           prerelease: true
