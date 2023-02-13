@@ -35,7 +35,7 @@ jobs:
         run: mvn package
       - name: Minecraft Custom Tag
         id: mctagcustom
-        uses: boyphongsakorn/minecraft-beta-version-style@v1.17
+        uses: boyphongsakorn/minecraft-beta-version-style@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Bump version and push tag
