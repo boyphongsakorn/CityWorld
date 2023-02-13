@@ -15,14 +15,83 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - uses: actions/upload-artifact@v2
-      with:
-        path: /home/runner/work/CityWorld/CityWorld/target/
+      - uses: actions/checkout@v2
+#     - name: Set up JDK 1.8
+#       uses: actions/setup-java@v1
+#       with:
+#         java-version: 1.8
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+#     - name: Build with Maven
+#       run: mvn -B package --file pom.xml
+#     - uses: actions/upload-artifact@v2
+#       with:
+#         path: /home/runner/work/CityWorld/CityWorld/target/
+      - name: Build with Maven
+        run: mvn package
+      - name: Minecraft Custom Tag
+        id: mctagcustom
+        uses: boyphongsakorn/minecraft-beta-version-style@v1.17
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ''
+          custom_tag: 1.0-beta-${{ steps.mctagcustom.outputs.betaversion }}
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "target/onedayplugin-1.0-SNAPSHOT.jar"
+          tag: 1.0-beta-${{ steps.mctagcustom.outputs.betaversion }}
+          prerelease: true
+          #bodyFile: "body.md"
+#       - uses: technote-space/release-github-actions@v6
+#       - name: Upload to release
+#         uses: JasonEtco/upload-to-release@master
+#         with:
+#           args: target/onedayplugin-1.0-SNAPSHOT.jar
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - uses: SpraxDev/Action-SpigotMC@v4
+#         with:
+#           # A comma-separated list of Spigot version that should be compiled
+#           # These values are later given to the BuildTools.jar as '--rev' argument
+#           #
+#           # Example: latest, 1.19.2, 1.8.8
+#           versions: latest # Optional
+
+#           # Should sources be generated?
+#           # If enabled, BuildTools is provided the '--generate-source' argument
+#           #generateSrc: false # Optional
+
+#           # Should the documentation be generated?
+#           # If enabled, BuildTools is provided the '--generate-docs' argument
+#           #generateDoc: false # Optional
+
+#           # Should we disable the BuildTools's Java-Version-Check?
+#           # If enabled, BuildTools is provided the '--disable-java-check' argument
+#           #disableJavaCheck: false # Optional
+
+#           # Should we download additional files to deobfucate CraftBukkit and NMS?
+#           # If enabled, BuildTools will also install additional files that are required to deobfuscate CraftBukkit and NMS with the SpecialSource-Plugin
+#           remapped: true # Optional
+
+#           # Disables the check for existing files in the local maven repository
+#           # Normally, a version is skipped if it is already installed
+#           # in the local maven repository to speed up build time
+#           #forceRun: false # Optional
+
+#           # The amount of builds allowed to run at the same time
+#           # Set to '-1' to use system's cpu core count
+#           #threads: -1 # Optional
+
+#           # You can choose between different BuildTools to be used by this action
+#           # Available: SpigotMC
+#           #buildToolProvider: SpigotMC # Optional
 
